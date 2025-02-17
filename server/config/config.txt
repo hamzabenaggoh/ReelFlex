@@ -1,0 +1,2 @@
+In this folder you can implement the configuration part, like dotenv.
+
