@@ -65,6 +65,39 @@ const createVideoWithTranscript = async (req, res) => {
     }
 };
 
-  
+// Create a new video with extracted captions
+const createVideoWithCaptions = async (req, res) => {
+    const { videoId, title } = req.body;
 
-  module.exports = { getVideos, createVideo, createVideoWithTranscript };
+    try {
+        // Step 1: Call the Python script using the child_process module
+        exec(`python3 scripts/extract_raw_captions.py ${videoId}`, async (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error executing Python script: ${error}`);
+                return res.status(500).json({ message: "Error fetching captions", error: error.message });
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                return res.status(500).json({ message: "Error fetching captions", error: stderr });
+            }
+
+            // Step 2: Use the entire captions as a string (stdout)
+            const captionsText = stdout.trim(); // Remove any unnecessary whitespace
+
+            // Step 3: Save the video and captions to the database
+            const newVideo = new Video({
+                videoId,
+                title,
+                transcript: captionsText // Store the whole captions as a string
+            });
+
+            const video = await newVideo.save();
+            res.status(201).json(video);  // Respond with the saved video data
+        });
+    } catch (err) {
+        console.error("Error in createVideoWithCaptions:", err);
+        res.status(500).json({ message: "Error fetching or saving captions", error: err.message });
+    }
+};
+
+module.exports = { getVideos, createVideo, createVideoWithTranscript, createVideoWithCaptions };
