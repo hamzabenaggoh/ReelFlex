@@ -2,8 +2,11 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
+
 const workoutRoutes = require('./routes/workoutRoutes');
 const videoRoutes = require('./routes/videoRoutes');
+const userRoutes = require('./routes/userRoutes');
+
 const errorHandler = require('./middleware/errorHandler');
 
 // Load environment variables
@@ -22,6 +25,7 @@ app.use(express.json()); // For parsing JSON requests
 // Routes
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/videos', videoRoutes);
+app.use('/api/users', userRoutes);
 
 // Error Handling Middleware
 app.use(errorHandler);

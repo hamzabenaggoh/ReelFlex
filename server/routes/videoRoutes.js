@@ -8,4 +8,8 @@ router.get('/', videoController.getVideos);
 // Create a new video
 router.post('/', videoController.createVideo);
 
+// Create a new video with transcript
+router.post('/create-with-transcript', videoController.createVideoWithTranscript);
+
+
 module.exports = router;

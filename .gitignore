@@ -5,3 +5,6 @@ node_modules/
 *.log
 package-lock.json
 README.MD
+server/.DS_Store
+.DS_Store
+server/scripts/video_ids_20250218_1353.txt
