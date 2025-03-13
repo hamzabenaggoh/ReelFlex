@@ -61,14 +61,14 @@ def get_channel_id(channel_identifier):
 
 def get_new_shorts(channel_id):
     """Fetch new short-form videos (under 60s) from a YouTube channel from the last 24 hours."""
+    # Get current time minus 24 hours
+    one_day_ago = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).isoformat() + "Z"
+    
     try:
-        # Get current time minus 24 hours
-        one_day_ago = (datetime.datetime.utcnow() - datetime.timedelta(days=1)).isoformat() + "Z"
-        
         request = youtube.search().list(
             part="id,snippet",
             channelId=channel_id,
-            maxResults=10,  # Increased to get more videos
+            maxResults=3,  # Fetch up to 3 recent videos
             order="date",  # Get latest videos first
             type="video",
             publishedAfter=one_day_ago

@@ -1,17 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const videoController = require('../controllers/videoController');
+const VideoController = require('../controllers/videoController');
 
 // Get all videos
-router.get('/', videoController.getVideos);
+router.get('/', VideoController.getVideos);
+
+// Get video transcript by ID
+router.get('/:videoId/transcript', VideoController.getTranscript);
 
 // Create a new video
-router.post('/', videoController.createVideo);
+router.post('/', VideoController.createVideo);
 
 // Create a new video with transcript
-router.post('/create-with-transcript', videoController.createVideoWithTranscript);
+router.post('/with-transcript', VideoController.createVideoWithTranscript);
 
 // Create a new video with captions
-router.post('/create-with-captions', videoController.createVideoWithCaptions);
+router.post('/with-captions', VideoController.createVideoWithCaptions);
+
+// Analyze video transcript
+router.get('/:videoId/analyze', VideoController.analyzeTranscript);
 
 module.exports = router;

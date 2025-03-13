@@ -1,11 +1,25 @@
 const Video = require('../models/video');
 const { exec } = require('child_process');
+const path = require('path');
 
 // Get all videos
 const getVideos = async (req, res) => {
   try {
     const videos = await Video.find();
     res.json(videos);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// Get video transcript by ID
+const getTranscript = async (req, res) => {
+  try {
+    const video = await Video.findOne({ videoId: req.params.videoId });
+    if (!video) {
+      return res.status(404).json({ message: 'Video not found' });
+    }
+    res.json({ transcript: video.transcript });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -100,4 +114,41 @@ const createVideoWithCaptions = async (req, res) => {
     }
 };
 
-module.exports = { getVideos, createVideo, createVideoWithTranscript, createVideoWithCaptions };
+// Analyze video transcript
+const analyzeTranscript = async (req, res) => {
+    const { videoId } = req.params;
+    const { analysisType = 'summary' } = req.query;
+
+    try {
+        // Execute the Python script
+        const scriptPath = path.join(__dirname, '..', 'scripts', 'analyze_transcript.py');
+        exec(`python3 ${scriptPath} ${videoId} ${analysisType}`, (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error executing Python script: ${error}`);
+                return res.status(500).json({ message: "Error analyzing transcript", error: error.message });
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+            }
+
+            try {
+                // Parse the JSON output from the Python script
+                const analysis = JSON.parse(stdout);
+                res.json(analysis);
+            } catch (parseError) {
+                console.error("Error parsing Python script output:", parseError);
+                res.status(500).json({ 
+                    message: "Error processing analysis", 
+                    error: parseError.message,
+                    stdout,
+                    stderr 
+                });
+            }
+        });
+    } catch (err) {
+        console.error("Error in analyzeTranscript:", err);
+        res.status(500).json({ message: "Error analyzing transcript", error: err.message });
+    }
+};
+
+module.exports = { getVideos, createVideo, createVideoWithTranscript, createVideoWithCaptions, analyzeTranscript, getTranscript };
