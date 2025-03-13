@@ -8,4 +8,7 @@ router.get('/', UserController.getUsers);
 // Create a new user
 router.post('/', UserController.createUser);
 
+// Update preferred influencers
+router.put('/update-preferred-influencers', UserController.updatePreferredInfluencers);
+
 module.exports = router;

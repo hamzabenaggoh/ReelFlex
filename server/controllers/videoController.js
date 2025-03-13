@@ -81,7 +81,7 @@ const createVideoWithCaptions = async (req, res) => {
                 return res.status(500).json({ message: "Error fetching captions", error: stderr });
             }
 
-            // Step 2: Use the entire captions as a string (stdout)
+            // Step 2: Use the returned captions as a string (stdout)
             const captionsText = stdout.trim(); // Remove any unnecessary whitespace
 
             // Step 3: Save the video and captions to the database

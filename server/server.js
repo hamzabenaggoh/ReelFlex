@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const workoutRoutes = require('./routes/workoutRoutes');
 const videoRoutes = require('./routes/videoRoutes');
 const userRoutes = require('./routes/userRoutes');
+const influencerRoutes = require('./routes/influencerRoutes');
 
 const errorHandler = require('./middleware/errorHandler');
 
@@ -26,6 +27,7 @@ app.use(express.json()); // For parsing JSON requests
 app.use('/api/workouts', workoutRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/influencers', influencerRoutes);
 
 // Error Handling Middleware
 app.use(errorHandler);

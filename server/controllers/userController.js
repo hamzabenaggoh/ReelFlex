@@ -28,4 +28,21 @@ const createUser = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, createUser };
+const updatePreferredInfluencers = async (req, res) => {
+  const { userID, preferredInfluencers } = req.body;
+
+  try {
+    const user = await User.findById(userID);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.preferredInfluencers = preferredInfluencers;
+    await user.save();
+    res.status(200).json({ message: 'Preferred influencers updated successfully', user });
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+};
+
+module.exports = { getUsers, createUser, updatePreferredInfluencers };

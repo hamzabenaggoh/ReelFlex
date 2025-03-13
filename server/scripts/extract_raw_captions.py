@@ -1,7 +1,18 @@
+import sys
 import os
 import cv2
 import yt_dlp as ytdlp
 import easyocr
+
+# Suppress stdout
+class SuppressStdout:
+    def __enter__(self):
+        self._original_stdout = sys.stdout
+        sys.stdout = open(os.devnull, 'w')
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        sys.stdout.close()
+        sys.stdout = self._original_stdout
 
 # Function to download YouTube video using yt-dlp
 
@@ -54,20 +65,22 @@ def main(video_id):
     output_path = './videos'
     os.makedirs(output_path, exist_ok=True)
 
-    # Download video
-    video_path = download_video(video_id, output_path)
+    # Suppress stdout during processing
+    with SuppressStdout():
+        # Download video
+        video_path = download_video(video_id, output_path)
 
-    # Extract frames at a 2-second interval
-    frames = extract_frames(video_path, interval_seconds=2)
+        # Extract frames at a 2-second interval
+        frames = extract_frames(video_path, interval_seconds=2)
 
-    # Extract text
-    text_data = extract_text_from_frames(frames)
+        # Extract text
+        text_data = extract_text_from_frames(frames)
 
-    # Print only the extracted captions
-    captions = "\n".join(text_data)
-    print(captions)
+    # Enable stdout and return the extracted captions
+    return "\n".join(text_data)
 
 if __name__ == "__main__":
     import sys
     video_id = sys.argv[1]
-    main(video_id) 
+    captions = main(video_id)
+    print(captions) 
